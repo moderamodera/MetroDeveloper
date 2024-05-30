@@ -60,6 +60,12 @@
     <ClCompile Include="uconsole.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="vfs.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="vs_signals.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="i_pathengine.h">
@@ -102,6 +108,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="iwriter.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="MetroDeveloper.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

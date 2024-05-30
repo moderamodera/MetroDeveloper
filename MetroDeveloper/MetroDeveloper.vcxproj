@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -40,7 +40,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -170,10 +170,13 @@
     <ClCompile Include="tok_file.c" />
     <ClCompile Include="tok_test.cpp" />
     <ClCompile Include="uconsole.cpp" />
+    <ClCompile Include="vfs.cpp" />
+    <ClCompile Include="vs_signals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="iwriter.h" />
     <ClInclude Include="i_pathengine.h" />
+    <ClInclude Include="MetroDeveloper.h" />
     <ClInclude Include="mfile.h" />
     <ClInclude Include="MinHook.h" />
     <ClInclude Include="MinHook\trampoline.h" />
