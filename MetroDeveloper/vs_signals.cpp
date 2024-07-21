@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <windows.h>
-#define PSAPI_VERSION 1
-#include <psapi.h>
 #include <dinput.h>
 
 #include "MetroDeveloper.h"
@@ -208,22 +206,18 @@ static DWORD WINAPI init_signals_thread(LPVOID param)
 	return 0;
 }
 
-void install_vs_signals(MODULEINFO &mi)
+void install_vs_signals()
 {
 	printf("initializing VS signals...\n");
 
-	dock_shared_string = (pfn_dock_shared_string)FindPattern(
-		(DWORD)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	dock_shared_string = (pfn_dock_shared_string)FindPatternInEXE(
 		(BYTE*)"\x83\xEC\x14\x53\x55\x56\x8B\x35\x84\x0D\xA1\x00\x57\x8B\x7C\x24\x28\x85\xFF",
 		"xx?xxxxx????xxxx?xx"
 	);
 
 	printf("dock_shared_string = %p\n", dock_shared_string);
 
-	igame_level_signal = (pfn_igame_level_signal)FindPattern(
-		(DWORD)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	igame_level_signal = (pfn_igame_level_signal)FindPatternInEXE(
 		(BYTE*)"\x83\xEC\x14\x53\x55\x56\x8B\x35\xDC\x0D\xA1\x00\x8B\x86\xF0\x01\x00\x00\x57\x8D\xBE\xF0\x01\x00\x00\x0F\xB6\xC8",
 		"xx?xxxxx????xx????xxx????xxx"
 	);

@@ -251,6 +251,9 @@ public:
 	//virtual iPath* findShortestPathEx() const = 0;
 	//virtual iPath* findPathAwayEx() const = 0;
 
+	// Modera: another dummy to align getConnectedRegionFor correctly
+	virtual int dummy5(int unknown1, int unknown2) = 0;
+
     virtual iPath* generateCurvedPath(iShape* shape, iPath* basePath, const iCollisionContext* context, tSigned32 startVectorX, tSigned32 startVectorY, tSigned32 sectionLength, float turnRatio1, float turnRatio2) const = 0;
     virtual iPath* constructPath(const cPosition* positionsBuffer, const tSigned32* connectionIndicesBuffer, tSigned32 pathLength) const = 0;
     virtual iPath* constructPath_Reversed(const cPosition* positionsBuffer, const tSigned32* connectionIndicesBuffer, tSigned32 pathLength) const = 0;

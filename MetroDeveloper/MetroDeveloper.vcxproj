@@ -167,11 +167,13 @@
     <ClCompile Include="MinHook\hde\hde32.c" />
     <ClCompile Include="MinHook\hde\hde64.c" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="navmap.cpp" />
     <ClCompile Include="tok_file.c" />
     <ClCompile Include="tok_test.cpp" />
     <ClCompile Include="uconsole.cpp" />
     <ClCompile Include="vfs.cpp" />
     <ClCompile Include="vs_signals.cpp" />
+    <ClCompile Include="wpn_bobbing_la.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="iwriter.h" />
@@ -189,6 +191,7 @@
     <ClInclude Include="model.hpp" />
     <ClInclude Include="tok_file.h" />
     <ClInclude Include="uconsole.h" />
+    <ClInclude Include="wpn_bobbing_la.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <windows.h>
-#define PSAPI_VERSION 1
-#include <psapi.h>
 #include "MinHook.h"
 
 #include "MetroDeveloper.h"
@@ -254,6 +252,12 @@ void* __fastcall rblock_init_Hook(const char* fn, unsigned int* f_offset, unsign
 	return rblock_init_Orig(fn, f_offset, f_size, not_packaged);
 }
 
+bool FileExists(const char* fn)
+{
+	DWORD attrs = GetFileAttributes(fn);
+	return (attrs != INVALID_FILE_ATTRIBUTES) && !(attrs & FILE_ATTRIBUTE_DIRECTORY);
+}
+
 bool __fastcall vfs_package_registry_level_downloaded_Hook(void* _this, const char* map_name)
 {
 	bool ret = vfs_package_registry_level_downloaded_Orig(_this, map_name);
@@ -273,13 +277,11 @@ bool __fastcall vfs_package_registry_level_downloaded_Hook(void* _this, const ch
 
 #endif
 
-void install_vfs_hooks(MODULEINFO& mi, bool isLL)
+void install_vfs_hooks(bool isLL)
 {
 #ifndef _WIN64
 	// 55 8B EC 83 E4 ? 83 EC ? 53 57 8D 44 24
-	LPVOID vfs_ropen_Address = (LPVOID)FindPattern(
-		(DWORD)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	LPVOID vfs_ropen_Address = (LPVOID)FindPatternInEXE(
 		(BYTE*)"\x55\x8B\xEC\x83\xE4\x00\x83\xEC\x00\x53\x57\x8D\x44\x24",
 		"xxxxx?xx?xxxxx");
 
@@ -288,32 +290,24 @@ void install_vfs_hooks(MODULEINFO& mi, bool isLL)
 	if (!isLL)
 	{
 		// 55 8B EC 83 E4 ? 81 EC ? ? ? ? 53 8B 1D ? ? ? ? 56 8D 44 24
-		vfs_ropen_os = (LPVOID)FindPattern(
-			(DWORD)mi.lpBaseOfDll,
-			mi.SizeOfImage,
+		vfs_ropen_os = (LPVOID)FindPatternInEXE(
 			(BYTE*)"\x55\x8B\xEC\x83\xE4\x00\x81\xEC\x00\x00\x00\x00\x53\x8B\x1D\x00\x00\x00\x00\x56\x8D\x44\x24",
 			"xxxxx?xx????xxx????xxxx");
 
 		// 55 8B EC 83 E4 ? 83 EC ? 53 56 57 8D 44 24 ? 50
-		vfs_rbuffered_Address = (LPVOID)FindPattern(
-			(DWORD)mi.lpBaseOfDll,
-			mi.SizeOfImage,
+		vfs_rbuffered_Address = (LPVOID)FindPatternInEXE(
 			(BYTE*)"\x55\x8B\xEC\x83\xE4\x00\x83\xEC\x00\x53\x56\x57\x8D\x44\x24\x00\x50",
 			"xxxxx?xx?xxxxxx?x");
 	}
 	else
 	{
 		// 55 8B EC 83 E4 ? 81 EC ? ? ? ? 56 57 8B 3D ? ? ? ? 8D 44 24
-		vfs_ropen_os = (LPVOID)FindPattern(
-			(DWORD)mi.lpBaseOfDll,
-			mi.SizeOfImage,
+		vfs_ropen_os = (LPVOID)FindPatternInEXE(
 			(BYTE*)"\x55\x8B\xEC\x83\xE4\x00\x81\xEC\x00\x00\x00\x00\x56\x57\x8B\x3D\x00\x00\x00\x00\x8D\x44\x24",
 			"xxxxx?xx????xxxx????xxx");
 
 		// 83 EC ? 53 55 56 57 8D 44 24 ? 50
-		vfs_rbuffered_Address = (LPVOID)FindPattern(
-			(DWORD)mi.lpBaseOfDll,
-			mi.SizeOfImage,
+		vfs_rbuffered_Address = (LPVOID)FindPatternInEXE(
 			(BYTE*)"\x83\xEC\x00\x53\x55\x56\x57\x8D\x44\x24\x00\x50",
 			"xx?xxxxxxx?x");
 	}
@@ -337,37 +331,27 @@ void install_vfs_hooks(MODULEINFO& mi, bool isLL)
 	}
 #else
 	// 48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 54 41 56 41 57 48 83 EC ? 45 33 E4 45 8B F9
-	LPVOID vfs_ropen_package_Address = (LPVOID)FindPattern(
-		(DWORD64)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	LPVOID vfs_ropen_package_Address = (LPVOID)FindPatternInEXE(
 		(BYTE*)"\x48\x89\x5C\x24\x00\x48\x89\x6C\x24\x00\x56\x57\x41\x54\x41\x56\x41\x57\x48\x83\xEC\x00\x45\x33\xE4\x45\x8B\xF9",
 		"xxxx?xxxx?xxxxxxxxxxx?xxxxxx");
 
 	// 48 8B C4 53 55 57 41 56 41 57 48 81 EC
-	vfs_ropen_os = (_vfs_ropen_os)FindPattern(
-		(DWORD64)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	vfs_ropen_os = (_vfs_ropen_os)FindPatternInEXE(
 		(BYTE*)"\x48\x8B\xC4\x53\x55\x57\x41\x56\x41\x57\x48\x81\xEC",
 		"xxxxxxxxxxxxx");
 
 	// 48 89 5C 24 ? 48 89 74 24 ? 41 56 48 83 EC ? 83 79
-	LPVOID vfs_rbuffered_package_Address = (LPVOID)FindPattern(
-		(DWORD64)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	LPVOID vfs_rbuffered_package_Address = (LPVOID)FindPatternInEXE(
 		(BYTE*)"\x48\x89\x5C\x24\x00\x48\x89\x74\x24\x00\x41\x56\x48\x83\xEC\x00\x83\x79",
 		"xxxx?xxxx?xxxxx?xx");
 
 	// 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 41 56 48 81 EC ? ? ? ? 33 ED
-	LPVOID rblock_init_Address = (LPVOID)FindPattern(
-		(DWORD64)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	LPVOID rblock_init_Address = (LPVOID)FindPatternInEXE(
 		(BYTE*)"\x48\x89\x5C\x24\x00\x48\x89\x6C\x24\x00\x48\x89\x74\x24\x00\x41\x56\x48\x81\xEC\x00\x00\x00\x00\x33\xED",
 		"xxxx?xxxx?xxxx?xxxxx????xx");
 
 	// 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 54 41 56 41 57 48 83 EC 20 44 0F B7 B9 ? ? ? ? 33 DB 4C 8B F2 4C 8B E1 45 85 FF 74 6E
-	LPVOID vfs_package_registry_level_downloaded_Address = (LPVOID)FindPattern(
-		(DWORD64)mi.lpBaseOfDll,
-		mi.SizeOfImage,
+	LPVOID vfs_package_registry_level_downloaded_Address = (LPVOID)FindPatternInEXE(
 		(BYTE*)"\x48\x89\x5C\x24\x00\x48\x89\x6C\x24\x00\x48\x89\x74\x24\x00\x48\x89\x7C\x24\x00\x41\x54\x41\x56\x41\x57\x48\x83\xEC\x20\x44\x0F\xB7\xB9\x00\x00\x00\x00\x33\xDB\x4C\x8B\xF2\x4C\x8B\xE1\x45\x85\xFF\x74\x6E",
 		"xxxx?xxxx?xxxx?xxxx?xxxxxxxxxxxxxx????xxxxxxxxxxxxx");
 
